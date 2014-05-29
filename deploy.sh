@@ -1,24 +1,58 @@
 #!/bin/bash
 
-REPO=/home/lorry/src/lorry.git
-WEBROOT=/var/www/virtual/lorry
+REPO="/home/lorry/src/lorry"
+WEBROOT="/var/www/virtual/lorry"
+CONFIGS="/home/lorry/install"
 DOMAIN=$1
 HEAD=$WEBROOT"/deploy/"$DOMAIN"-"`git --git-dir $REPO"/.git" --work-tree $REPO log -1 --pretty="%ct-%h"`
 TARGET=$HEAD
 
-# 
+# update master repositofy
+echo "Updating master source..."
+cd $REPO
+git pull
+
+# deploy
 echo "Deploying "$DOMAIN"..."
 
 # clone repository
-if [ -d "$TARGET" ]; then
-	echo "Repository up-to-date at "$TARGET
+if [ -d $TARGET ]; then
+	echo "Repository up-to-date at "$TARGET", resetting..."
+	cd $TARGET
+	git reset --hard HEAD
 else
 	git clone --quiet $REPO $TARGET
+	cd $TARGET
 fi
 
-cd $TARGET
+echo "Composer installing..."
 composer install --optimize-autoloader --no-interaction
-# php install config files
+
+# merge htaccess
+TEMPLATES=$CONFIGS"/"$DOMAIN
+if [ -f $TEMPLATES"/.htaccess" ]; then
+	echo "Merging .htaccess..."
+	echo $'\n' >> "web/.htaccess"
+	cat $TEMPLATES"/.htaccess" >> "web/.htaccess"
+fi
+
+# merge configs
+cat $TARGET"/app/config/lorry.example.yml" > "app/config/lorry.yml"
+if [ -f $TEMPLATES"/lorry.yml" ]; then
+        echo "Merging configurations..."
+	echo $'\n' >> "app/config/lorry.yml"
+        cat $TEMPLATES"/lorry.yml" >> "app/config/lorry.yml"
+	echo "Installed merged configuration"
+else
+        echo "Installed default configuration"
+fi
+
+if [ -f $TEMPLATES"/tracking.html" ]; then
+        echo "Installed tracking code"
+	cat $TEMPLATES"/tracking.html" > "app/config/tracking.html"
+else
+	echo "No tracking code found"
+fi
 
 # relink domain
 cd $WEBROOT
