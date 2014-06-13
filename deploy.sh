@@ -36,6 +36,8 @@ if [ -f $TEMPLATES"/.htaccess" ]; then
 	cat $TEMPLATES"/.htaccess" >> "web/.htaccess"
 fi
 
+# remove possible existing old config
+rm -f "app/config/lorry.yml"
 # merge configs
 if [ -f $TEMPLATES"/lorry.yml" ]; then
         echo "Merging configurations..."
