@@ -37,15 +37,15 @@ if [ -f $TEMPLATES"/.htaccess" ]; then
 fi
 
 # merge configs
-cat $TARGET"/app/config/lorry.example.yml" > "app/config/lorry.yml"
 if [ -f $TEMPLATES"/lorry.yml" ]; then
         echo "Merging configurations..."
-	echo $'\n' >> "app/config/lorry.yml"
         cat $TEMPLATES"/lorry.yml" >> "app/config/lorry.yml"
+	echo $'\n' >> "app/config/lorry.yml"
 	echo "Installed merged configuration"
 else
         echo "Installed default configuration"
 fi
+cat $TARGET"/app/config/lorry.example.yml" >> "app/config/lorry.yml"
 
 if [ -f $TEMPLATES"/tracking.html" ]; then
         echo "Installed tracking code"
