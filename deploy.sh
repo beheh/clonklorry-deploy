@@ -26,7 +26,7 @@ else
 fi
 
 echo "Composer installing..."
-composer install --optimize-autoloader --no-interaction
+composer install --optimize-autoloader --no-interaction --working-dir=$TARGET
 
 # merge htaccess
 TEMPLATES=$CONFIGS"/"$DOMAIN
