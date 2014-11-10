@@ -4,13 +4,14 @@ REPO="/home/lorry/src/lorry"
 WEBROOT="/var/www/virtual/lorry"
 CONFIGS="/home/lorry/install"
 DOMAIN=$1
-HEAD=$WEBROOT"/deploy/"$DOMAIN"-"`git --git-dir $REPO"/.git" --work-tree $REPO log -1 --pretty="%ct-%h"`
-TARGET=$HEAD
 
 # update master repositofy
 echo "Updating master source..."
 cd $REPO
 git pull
+
+HEAD=$WEBROOT"/deploy/"$DOMAIN"-"`git --git-dir $REPO"/.git" --work-tree $REPO log -1 --pretty="%ct-%h"`
+TARGET=$HEAD
 
 # deploy
 echo "Deploying "$DOMAIN"..."
