@@ -21,6 +21,7 @@ echo "Deploying "$DOMAIN"..."
 if [ -d $TARGET ]; then
 	echo "Repository up-to-date at "$TARGET", resetting..."
 	cd $TARGET
+	git clean -f
 	git checkout .
 else
 	git clone --quiet $REPO $TARGET
