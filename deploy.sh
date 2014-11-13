@@ -4,6 +4,7 @@ REPO="/home/lorry/src/lorry"
 WEBROOT="/var/www/virtual/lorry"
 CONFIGS="/home/lorry/install"
 CURRENT="/home/lorry/current"
+SERVICES="/home/lorry/service"
 DOMAIN=$1
 
 # update master repositofy
@@ -73,4 +74,12 @@ if [ -L "$DOMAIN" ]; then
 fi
 ln -s $TARGET $DOMAIN
 
-echo "Deployed "$HEAD" to "$DOMAIN
+# restart services
+SERVICE=$SERVICES"/worker-"$DOMAIN
+if [ -L "$SERVICE" ]; then
+	svc -t $SERVICE
+	svc -u $SERVICE
+	echo "Restarted worker(s)"
+fi
+
+echo "Successfully deployed "$HEAD" to "$DOMAIN
