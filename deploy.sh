@@ -3,6 +3,7 @@
 REPO="/home/lorry/src/lorry"
 WEBROOT="/var/www/virtual/lorry"
 CONFIGS="/home/lorry/install"
+CURRENT="/home/lorry/current"
 DOMAIN=$1
 
 # update master repositofy
@@ -20,7 +21,7 @@ echo "Deploying "$DOMAIN"..."
 if [ -d $TARGET ]; then
 	echo "Repository up-to-date at "$TARGET", resetting..."
 	cd $TARGET
-	git reset --hard HEAD
+	git checkout .
 else
 	git clone --quiet $REPO $TARGET
 	cd $TARGET
@@ -63,5 +64,12 @@ if [ -L "$DOMAIN" ]; then
 	rm $DOMAIN
 fi
 ln -s $TARGET"/web" $DOMAIN
+
+# relink service directory
+cd $CURRENT
+if [ -L "$DOMAIN" ]; then
+        rm $DOMAIN
+fi
+ln -s $TARGET $DOMAIN
 
 echo "Deployed "$HEAD" to "$DOMAIN
