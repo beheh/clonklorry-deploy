@@ -31,6 +31,11 @@ fi
 
 echo "Composer installing..."
 composer install --optimize-autoloader --no-interaction --working-dir=$TARGET
+if [ "$?" != 0 ]; then
+	echo -e "\e[1m\e[31mComposer install failed, aborting deployment\e[21m\e[39m"
+	exit 1
+fi
+
 
 # merge htaccess
 TEMPLATES=$CONFIGS"/"$DOMAIN
@@ -76,10 +81,14 @@ ln -s $TARGET $DOMAIN
 
 # restart services
 SERVICE=$SERVICES"/worker-"$DOMAIN
-if [ -L "$SERVICE" ]; then
+if [ -L $SERVICE ]; then
+	if [ -L $SERVICE"/down" ]; then
+		echo -e "\e[33mService unexpectedly was down - restarting\e[39m"
+		rm $SERVICE"/down"
+	fi
 	svc -t $SERVICE
 	svc -u $SERVICE
 	echo "Restarted worker(s)"
 fi
 
-echo "Successfully deployed "$HEAD" to "$DOMAIN
+echo -e "\e[1m\e[32mSuccessfully deployed "$HEAD" to "$DOMAIN"\e[21m\e[39m"
