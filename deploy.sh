@@ -5,6 +5,7 @@ WEBROOT="/var/www/virtual/lorry"
 CONFIGS="/home/lorry/install"
 CURRENT="/home/lorry/current"
 SERVICES="/home/lorry/service"
+DEPLOY=$WEBROOT"/deploy"
 DOMAIN=$1
 
 # update master repositofy
@@ -12,7 +13,7 @@ echo "Updating master source..."
 cd $REPO
 git pull
 
-HEAD=$WEBROOT"/deploy/"$DOMAIN"-"`git --git-dir $REPO"/.git" --work-tree $REPO log -1 --pretty="%ct-%h"`
+HEAD=$DEPLOY"/"$DOMAIN"-"`git --git-dir $REPO"/.git" --work-tree $REPO log -1 --pretty="%ct-%h"`
 TARGET=$HEAD
 
 # deploy
@@ -92,3 +93,8 @@ if [ -L $SERVICE ]; then
 fi
 
 echo -e "\e[1m\e[32mSuccessfully deployed "$HEAD" to "$DOMAIN"\e[21m\e[39m"
+
+cd $DEPLOY
+echo "Removing all but the last 5 deploys..."
+rm -rf `ls -1 | sort -r | tail -n +6`
+echo "All tasks complete."
